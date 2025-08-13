@@ -1,0 +1,1325 @@
+<! DOCTYPE html>
+<html lang="de">
+<Kopf>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=Gerätebreite, initiale-scale=1.0">
+ <title>Zellen-Reiniger - Gesund werden App</title>
+ <Stil>
+ @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Nunito:wght@400; 600; 700&display=swap');
+ 
+* {
+ Rand: 0;
+ Abstand: 0;
+ box-sizing: border-box;
+ }
+ 
+körper {
+ font-family: 'Nunito', serifenlos;
+ Hintergrund: linearer Gradient (135 Grad, #667eea 0 %, #764ba2 100 %);
+ min-Höhe: 100vh;
+ overflow-x: versteckt;
+ user-select: keine;
+ }
+ 
+.container {
+ maximale Breite: 1200px;
+ margin: 0 automatisch;
+ Abstand: 20px;
+ text-align: zentriert;
+ }
+ 
+.header {
+ Rand unten: 30px;
+ }
+ 
+.title {
+ font-family: 'Fredoka One', kursiv;
+ Schriftgröße: 2.5rem;
+ Farbe: weiß;
+ text-schatten: 2px 2px 4px rgba(0,0,0,0.3);
+ Rand unten: 10px;
+ }
+ 
+.subtitle {
+ Schriftgröße: 1.2rem;
+ Farbe: RGBA (255,255,255,0.9);
+ Rand unten: 20px;
+ }
+ 
+.game-area {
+ Hintergrund: RGBA (255,255,255,0,95);
+ border-radius: 20px;
+ Abstand: 30px;
+ box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+ Position: relativ;
+ Rand unten: 20px;
+ }
+ 
+.cell-container {
+ Anzeige: Raster;
+ grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+ Abstand: 15px;
+ max. Breite: 600px;
+ Rand: 0 automatisch 30px;
+ Abstand: 20px;
+ }
+ 
+.zelle {
+ Breite: 80px;
+ Höhe: 80px;
+ Rand-Radius: 50%;
+ Position: relativ;
+ Cursor: Zeiger;
+ Übergang: alle 0,3 Sekunden Leichtigkeit;
+ margin: 0 automatisch;
+ }
+ 
+.cell.dirty {
+ Hintergrund: radial-gradient(Kreis, #ff6b6b, #ee5a52);
+ box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+ Animation: Pulse 2s unendlich;
+ }
+ 
+.cell.cleaning {
+ Hintergrund: radial-gradient(Kreis, #feca57, #ff9ff3);
+ transform: scale(1.1);
+ box-shadow: 0 6px 20px rgba(254,202,87,0.6);
+ }
+ 
+.zelle.sauber {
+ Hintergrund: radial-gradient(Kreis, #48dbfb, #0abde3);
+ box-shadow: 0 4px 15px rgba(72,219,251,0.4);
+ Animation: Sparkle 1,5s Ease-Out;
+ }
+ 
+@keyframes Puls {
+ 0%, 100% { transformieren: scale(1); }
+ 50% { transformieren: scale(1.05); }
+ }
+ 
+@keyframes funkeln {
+ 0% { transformieren: scale(1.2) rotate(0deg); }
+ 50% { transformieren: scale(1.3) rotate(180deg); }
+ 100% { transformieren: scale(1) rotate(360deg); }
+ }
+ 
+.sponge {
+ Breite: 60px;
+ Höhe: 40px;
+ Hintergrund: linearer Gradient (45 Grad, #ffd93d, #ffcd3c);
+ border-radius: 10px;
+ Position: absolut;
+ pointer-events: keine;
+ Z-Index: 100;
+ box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+ Übergang: alle 0,1 s Leichtigkeit;
+ Deckkraft: 0;
+ }
+ 
+.sponge::vor {
+ Inhalt: '';
+ Position: absolut;
+ oben: 2px;
+ Links: 2px;
+ rechts: 2px;
+ unten: 2px;
+ Hintergrund: repeating-linear-gradient(
+ 45 Grad,
+ durchsichtig
+ transparent 2px,
+ rgba(255,255,255,0.3) 2px,
+ rgba(255,255,255,0.3) 4px
+ );
+ border-radius: 8px;
+ }
+ 
+.progress-bar {
+ Breite: 100%;
+ Höhe: 20px;
+ Hintergrund: rgba(0,0,0,0.1);
+ border-radius: 10px;
+ Überlauf: versteckt;
+ Rand: 20px 0;
+ }
+ 
+.progress-fill {
+ Höhe: 100%;
+ Hintergrund: linear-gradient(90deg, #48dbfb, #0abde3);
+ border-radius: 10px;
+ Übergang: Breite 0,5s Leichtigkeit;
+ Breite: 0%;
+ }
+ 
+.stats {
+ Anzeige: Flex;
+ justify-content: Leerzeichen;
+ Rand: 20px 0;
+ Flex-Wrap: Wickeln;
+ Abstand: 10px;
+ }
+ 
+.stat {
+ Hintergrund: RGBA (255,255,255,0.2);
+ Abstand: 15px 20px;
+ border-radius: 15px;
+ Hintergrund-Filter: Unschärfe(10px);
+ Farbe: weiß;
+ Schriftstärke: 600;
+ }
+ 
+.controls {
+ margin-top: 20px;
+ }
+ 
+.btn {
+ Hintergrund: linear-gradient(45deg, #ff6b6b, #ee5a52);
+ Farbe: weiß;
+ Rand: keiner;
+ Abstand: 15px 30px;
+ border-radius: 25px;
+ Schriftgröße: 1.1rem;
+ Schrift-WiegenT: 600;
+ Cursor: Zeiger;
+ Übergang: alle 0,3 Sekunden Leichtigkeit;
+ Rand: 0 10px;
+ box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+ }
+ 
+.btn:schweben {
+ transformieren: translateY(-2px);
+ box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+ }
+ 
+.btn.success {
+ Hintergrund: linear-gradient(45deg, #48dbfb, #0abde3);
+ }
+ 
+.btn.music {
+ Hintergrund: linearer Farbverlauf (45 Grad, #a8e6cf, #7fcdcd);
+ }
+ 
+.music-controls {
+ Hintergrund: RGBA (255,255,255,0.1);
+ border-radius: 15px;
+ Abstand: 20px;
+ Rand: 20px 0;
+ Hintergrund-Filter: Unschärfe(10px);
+ }
+ 
+.music-title {
+ Farbe: weiß;
+ Schriftgröße: 1.2rem;
+ Schriftstärke: 600;
+ margin-unten: 15px;
+ }
+ 
+.tone-buttons {
+ Anzeige: Flex;
+ Flex-Wrap: Wickeln;
+ Abstand: 10px;
+ justify-content: Mitte;
+ margin-unten: 15px;
+ }
+ 
+.tone-btn {
+ Hintergrund: linearer Farbverlauf (45 Grad, #a8e6cf, #7fcdcd);
+ Farbe: weiß;
+ Rand: keiner;
+ Abstand: 10px 15px;
+ border-radius: 20px;
+ Schriftgröße: 0.9rem;
+ Schriftstärke: 600;
+ Cursor: Zeiger;
+ Übergang: alle 0,3 Sekunden Leichtigkeit;
+ box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+ }
+ 
+.tone-btn:hover {
+ transformieren: translateY(-2px);
+ box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+ }
+ 
+.tone-btn.active {
+ Hintergrund: linear-gradient(45deg, #ff6b6b, #ee5a52);
+ Animation: pulse-music 1s unendlich;
+ }
+ 
+@keyframes pulse-music {
+ 0%, 100% { transformieren: scale(1); }
+ 50% { transformieren: scale(1.05); }
+ }
+ 
+.cell.musical {
+ Hintergrund: radial-gradient(Kreis, #a8e6cf, #7fcdcd);
+ Animation: Musikalischer Impuls 0,5s Ease-Out;
+ }
+ 
+@keyframes musical-pulse {
+ 0% { transformieren: scale(1); }
+ 50% { transform: scale(1.2); box-shadow: 0 0 20px rgba(168,230,207,0.8); }
+ 100% { transformieren: scale(1); }
+ }
+ 
+.music-wave {
+ Position: absolut;
+ Breite: 100px;
+ Höhe: 100px;
+ Rand: 2px fester RGBA (168.230.207.0.6);
+ Rand-Radius: 50%;
+ pointer-events: keine;
+ Animation: Wave-Expand 1s Leichtigkeit nach vorne;
+ }
+ 
+@keyframes wave-expand {
+ 0% {
+ transformieren: scale(0);
+ Deckkraft: 1;
+ }
+ 100% {
+ transformieren: scale(2);
+ Deckkraft: 0;
+ }
+ }
+ 
+.message {
+ Schriftgröße: 1.3rem;
+ Schriftstärke: 600;
+ Rand: 20px 0;
+ Polsterung: 15px;
+ border-radius: 15px;
+ Übergang: alle 0,3 Sekunden Leichtigkeit;
+ }
+ 
+.message.ermutigend {
+ Hintergrund: RGBA (72.219.251.0,2);
+ Farbe: #0abde3;
+ Rand: 2px fester RGBA (72.219.251.0.3);
+ }
+ 
+.message.celebration {
+ Hintergrund: RGBA (255,107,107,0.2);
+ Farbe: #ee5a52;
+ Rand: 2px fester RGBA (255,107,107,0.3);
+ Animation: Leichtigkeit des Hüpfens um 0,6 Sekunden;
+ }
+ 
+@keyframes prallen {
+ 0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+ 40% { transformieren: translateY(-10px); }
+ 60% { transformieren: translateY(-5px); }
+ }
+ 
+.particles {
+ Position: absolut;
+ pointer-events: keine;
+ Z-Index: 50;
+ }
+ 
+.particle {
+ Position: absolut;
+ Breite: 6px;
+ Höhe: 6px;
+ Hintergrund: #48dbfb;
+ Rand-Radius: 50%;
+ Animation: Schweben 1 erleichtert sich nach vorne;
+ }
+ 
+@keyframes float {
+ 0% {
+ Deckkraft: 1;
+ transformieren: translateY(0) scale(1);
+ }
+ 100% {
+ Deckkraft: 0;
+ transformieren: translateY(-50px) scale(0.5);
+ }
+ }
+ 
+.game-arena {
+ Hintergrund: rgba(0,0,0,0.8);
+ border-radius: 20px;
+ Abstand: 30px;
+ Rand: 20px 0;
+ text-align: zentriert;
+ }
+ 
+.arena-title {
+ font-family: 'Fredoka One', kursiv;
+ Schriftgröße: 1.8rem;
+ Farbe: weiß;
+ margin-unten: 15px;
+ }
+ 
+#gameCanvas {
+ Rand: 3px feste #48dbfb;
+ border-radius: 10px;
+ Hintergrund: #000;
+ Rand: 20px 0;
+ max. Breite: 100%;
+ Höhe: automatisch;
+ }
+ 
+.game-stats {
+ Anzeige: Flex;
+ justify-content: Mitte;
+ Abstand: 30px;
+ Rand: 20px 0;
+ Flex-Wrap: Wickeln;
+ }
+ 
+.game-stat {
+ Farbe: weiß;
+ Schriftgröße: 1.2rem;
+ Schriftstärke: 600;
+ Hintergrund: RGBA (255,255,255,0.1);
+ Abstand: 10px 20px;
+ border-radius: 15px;
+ Backdrop-filter: blur(10px);
+ }
+ 
+.game-controls {
+ margin-top: 20px;
+ }
+
+@media (max. Breite: 768px) {
+ .title {
+ Schriftgröße: 2rem;
+ }
+ 
+.cell-container {
+ grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+ Abstand: 10px;
+ }
+ 
+.zelle {
+ Breite: 60px;
+ Höhe: 60px;
+ }
+ 
+.stats {
+ Flex-Richtung: Säule;
+ align-items: zentriert;
+ }
+ 
+.btn {
+ Rand: 5px;
+ Abstand: 12px 25px;
+ }
+ 
+#gameCanvas {
+ Breite: 100%;
+ Maximale Breite: 350px;
+ }
+ 
+.game-stats {
+ Abstand: 15px;
+ }
+ }
+ </Stil>
+</Kopf>
+<Körper>
+ <div class="container">
+ <div class="Kopf">
+ <h1 class="title"> 🧽 Zellen-Reiniger 🦠 </h1>
+ <p class="subtitle">Hilf deinem Körper gesund zu werden! Reinige alle kranken Zellen mit dem magischen Schwamm.</p>
+ </div>
+ 
+<div class="Spielbereich">
+ <div class="cell-container" id="cellContainer">
+ <!-- Zellen werden hier generiert -->
+ </div>
+ 
+<div class="Fortschrittsbalken">
+ <div class="progress-fill" id="progressFill"></div>
+ </div>
+ 
+<div class="Nachricht ermutigend" id="Nachricht">
+ Bewege den Schwamm über die roten Zellen, um sie zu reinigen! 🧽✨
+ </div>
+ 
+<div class="Steuerelemente">
+ <button class="btn" onclick="resetGame()">Neue Krankheit heilen</button>
+ <button class="btn success" onclick="addMoreCells()">Mehr Zellen hinzufügen</button>
+ <button class="btn music" onclick="toggleMusicMode()"> Musik-Therapie</button> 🎵
+ <button class="btn" style="background: linear-gradient(45deg, #ff6b6b, #4ecdc4);" onclick="toggleGameMode()"> 🎮 Krankheitserreger-Jäger</button>
+ </div>
+ </div>
+ 
+<div class="music-controls" id="musicControls" style="display: none;" >
+ <div class="music-title"> 🎵 Musik-Therapie für deine Zellen 🎵 </div>
+ <p style="Farbe: rgba(255,255,255,0.8); margin-bottom: 15px;" >
+ Klicke auf die Töne und dann auf die Zellen, um sie mit heilender Musik zu behandeln!
+ </S>
+ 
+<div class="tone-buttons">
+ <h4 style="Farbe: weiß; Rand unten: 10px; Breite: 100%;" 🎵 > Normale Töne</h4>
+ <button class="tone-btn" onclick="playTone('C4', this)">Do (C)</button>
+ <button class="tone-btn" onclick="playTone('D4', this)">Re (D)</button>
+ <button class="tone-btn" onclick="playTone('E4', this)">Mi (E)</button>
+ <button class="tone-btn" onclick="playTone('F4', this)">Fa (F)</button>
+ <button class="tone-btn" onclick="playTone('G4', this)">Sol (G)</button>
+ <button class="tone-btn" onclick="playTone('A4', this)">La (A)</button>
+ <button class="tone-btn" onclick="playTone('B4', this)">Si (B)</button>
+ <button class="tone-btn" onclick="playTone('C5', this)">Do (C5)</button>
+ </div>
+ 
+<div class="tone-buttons" style="margin-top: 20px;" >
+ <h4 style="Farbe: weiß; Rand unten: 10px; Breite: 100%;" ✨ > Spezielle Heilfrequenzen</h4>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('174', this)">174 Hz - Schmerzlinderung</button>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('285', this)">285 Hz - Zellregeneration</Taste>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('396', this)">396 Hz - Angst lösen</button>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('417', this)">417 Hz - Veränderung</button>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('528', this)">528 Hz - DNA-Reparatur</button>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('639', this)">639 Hz - Beziehungen</button>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('741', this)">741 Hz - Entgiftung</button>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('852', this)">852 Hz - Intuition</Taste>
+ <button class="tone-btn healing-btn" onclick="playHealingFreq('963', this)">963 Hz - Einheit</button>
+ </div>
+ 
+<div style="Rand-oben: 15px;" >
+ <button class="tone-btn" onclick="playHealingMelody()"> 🎼 Heilende Melodie abspielen</button>
+ <button class="tone-btn" onclick="stopAllSounds()"> 🔇 Stoppen</button>
+ </div>
+ </div>
+ 
+<div class="game-arena" id="gameArena" style="Anzeige: keine;" >
+ <div class="arena-title"> 🎮 Krankheitserreger-Jäger 🦠 </div>
+ <p style="Farbe: rgba(255,255,255,0.9); margin-bottom: 20px;" >
+ Steuere deine Immunzelle mit den Pfeiltasten oder WASD und jage die Krankheitserreger!
+ </S>
+ <canvas id="gameCanvas" width="600" height="400"></canvas>
+ <div class="Spiel-Statistiken">
+ <div class="game-stat">Ergebnis: <span id="gameScore">0</span></div>
+ <div class="game-stat">Leben: <span id="gameLives">3</span></div>
+ <div class="game-stat">Level: <span id="gameLevel">1</span></div>
+ </div>
+ <div class="Spielsteuerung">
+ <button class="btn" onclick="startGame()"> 🎮 Spiel starten</button>
+ <button class="btn" onclick="pauseGame()"> ⏸️ Pause</Taste>
+ <button class="btn" onclick="resetGameMode()"> 🔄 Neustart</button>
+ </div>
+ </div>
+
+<div class="Statistiken">
+ <div class="stat">
+ <div>Gereinigte Zellen</div>
+ <div id="cleanedCount">0</div>
+ </div>
+ <div class="stat">
+ <div>Kranke Zellen</div>
+ <div id="dirtyCount">0</div>
+ </div>
+ <div class="stat">
+ <div>Gesundheit</div>
+ <div id="healthPercent">0%</div>
+ </div>
+ </div>
+ 
+<div class="schwamm" id="schwamm"></div>
+ <div class="particles" id="particles"></div>
+ </div>
+
+<Drehbuch>
+ Zellen = [];
+ let cleanedCells = 0;
+ Lass totalCells = 0;
+ let isMouseDown = falsch;
+ Lass musicMode = falsch;
+ let gameMode = falsch;
+ Lass currentTone = null;
+ audioContext = null;
+ let activeOszillatoren = [];
+ let melodyInterval = null;
+ 
+Spiel-Variablen
+ Lassen Sie Leinwand, CTX;
+ let gameRunning = falsch;
+ let gamePaused = falsch;
+ Lass gameScore = 0;
+ lass gameLives = 3;
+ let gameLevel = 1;
+ lass Spieler = {};
+ Lassen Sie Viren = [];
+ lass powerUps = [];
+ lassen Sie gameAnimationId;
+ 
+const Schwamm = document.getElementById('Schwamm');
+ const cellContainer = document.getElementById('cellContainer');
+ const progressFill = document.getElementById('progressFill');
+ const Nachricht = document.getElementById('Nachricht');
+ const Partikel = document.getElementById('Partikel');
+ 
+const encouragingMessages = [
+ "Super! Du hilfst deinem Körper! 💪",
+ "Toll gemacht! Die Zellen werden sauber! ✨",
+ "Weiter so! Du bist ein echter Zellen-Held! 🦸‍♀️",
+ "Fantastisch! Dein Körper wird immer gesünder! 🌟",
+ "Großartig! Die kranken Zellen verschwinden! 🎉"
+ ];
+ 
+const celebrationMessages = [
+ " 🎉 GESCHAFFT! Alle Zellen sind sauber! Du bist gesund! 🎉",
+ " 🌟 PERFEKT! Dein Körper ist wieder völlig gesund! 🌟",
+ " 🏆 SUPER HELD! Du hast alle Krankheiten besiegt! 🏆",
+ " ✨ WUNDERBAR! Alle Zellen strahlen vor Gesundheit! ✨"
+ ];
+ 
+Musik-Funktionen
+ const noteHäufigkeiten = {
+ "C4": 261,63,
+ 'D4': 293,66,
+ 'E4': 329,63,
+ 'F4': 349,23,
+ "G4": 392,00,
+ "A4": 440,00,
+ 'B4': 493,88,
+ 'C5': 523,25
+ };
+ 
+// Spezielle Heilfrequenzen (in Hz)
+ const healingFrequencies = {
+ '174': { name: 'Schmerzlinderung', freq: 174, color: '#ff6b6b' },
+ '285': { name: 'Zellregeneration', Frequenz: 285, Farbe: '#4ecdc4' },
+ '396': { name: 'Angst lösen', freq: 396, color: '#45b7d1' },
+ '417': { name: 'Veränderung', freq: 417, color: '#96ceb4' },
+ '528': { name: 'DNA-Reparatur', freq: 528, color: '#feca57' },
+ '639': { name: 'Beziehungen', freq: 639, color: '#ff9ff3' },
+ '741': { name: 'Entgiftung', freq: 741, color: '#54a0ff' },
+ '852': { name: 'Intuition', freq: 852, color: '#5f27cd' },
+ '963': { name: 'Einheit', freq: 963, color: '#00d2d3' }
+ };
+ 
+Funktion initAudioContext() {
+ if (!audioContext) {
+ audioContext = new (Fenster. AudioKontext || window.webkitAudioContext)();
+ }
+ audioContext zurückgeben;
+ }
+ 
+Funktion createTone(Häufigkeit, Dauer = 0.5) {
+ const ctx = initAudioContext();
+ const oszillator = ctx.createOszillator();
+ const gainNode = ctx.createGain();
+ 
+oszillator.connect(gainNode);
+ gainNode.connect(ctx.ziel);
+ 
+oszillator.frequency.setValueAtTime(Frequenz, ctx.currentTime);
+ oszillator.type = 'Sinus';
+ 
+gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+ gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + Dauer);
+ 
+oszillator.start(ctx.currentTime);
+ oszillator.stop(ctx.currentTime + Dauer);
+ 
+activeOszillatoren.push(Oszillator);
+ 
+oszillator.onended = () => {
+ const index = activeOszillatoren.indexOf(oszillator);
+ if (Index > -1) {
+ activeOszillatoren.splice(Index, 1);
+ }
+ };
+ 
+Rücklauf-Oszillator;
+ }
+ 
+function playTone(note, buttonElement) {
+ try {
+ const frequency = noteHäufigkeiten[Hinweis];
+ if (Häufigkeit) {
+ createTone(Frequenz, 0,8);
+ currentTone = Notiz;
+ 
+Button-Animation
+ document.querySelectorAll('.tone-btn').forEach(btn => btn.classList.remove('active'));
+ buttonElement.classList.add('aktiv');
+ 
+setTimeout(() => {
+ buttonElement.classList.remove('aktiv');
+ }, 800);
+ }
+ } catch (Fehler) {
+ console.log('Audio wird nicht unterstützt');
+ }
+ }
+ 
+Funktion playHealingFreq(freqKey, buttonElement) {
+ try {
+ const healingData = healingFrequencies[freqKey];
+ if (healingData) {
+ createTone(healingData.freq, 1.5); // Längere Dauer für Heilfrequenzen
+ currentTone = freqKey;
+ 
+// Button-Animation mit spezieller Farbe
+ document.querySelectorAll('.tone-btn').forEach(btn => btn.classList.remove('active'));
+ buttonElement.classList.add('aktiv');
+ buttonElement.style.background = 'linearer-gradient(45deg, ${healingData.color}, ${healingData.color}dd)';
+ 
+setTimeout(() => {
+ buttonElement.classList.remove('aktiv');
+ buttonElement.style.background = '';
+ }, 1500);
+ 
+// Spezielle Nachricht für Heilfrequenzen
+ message.textContent = ' ✨ ${healingData.freq} Hz aktiviert - ${healingData.name} ✨ ';
+ message.className = 'ermutigende Nachricht';
+ }
+ } catch (Fehler) {
+ console.log('Audio wird nicht unterstützt');
+ }
+ }
+ 
+Funktion playHealingMelody() {
+ // Verwende spezielle Heilfrequenzen für die Melodie
+ const healingMelody = ['528', '396', '417', '639', '741', '852', '963'];
+ let noteIndex = 0;
+ 
+stopAllSounds();
+ 
+nachricht.textContent = " 🎼 Heilende Frequenz-Melodie läuft... Alle Zellen werden automatisch behandelt! 🎼";
+ message.className = 'ermutigende Nachricht';
+ 
+melodyInterval = setInterval(() => {
+ if (noteIndex < healingMelody.length) {
+ const freqKey = HeilungMelody[noteIndex];
+ const healingData = healingFrequencies[freqKey];
+ createTone(healingData.freq, 1.0);
+ 
+Zufällige Zellen mit spezieller Heilfrequenz behandeln
+ const dirtyCells = cells.filter(cell => cell.state === 'schmutzig');
+ if (dirtyCells.length > 0) {
+ const randomCell = dirtyCells[Math.floor(Math.random() * dirtyCells.length)];
+ const index = cells.indexOf(zufällige Zelle);
+ currentTone = freqKey; // Setze aktuelle Heilfrequenz
+ treatCellWithMusic(randomCell.element, Index);
+ }
+ 
+noteIndex++;
+ } else {
+ clearInterval(melodyIntervall);
+ melodyInterval = null;
+ currentTone = null;
+ message.textContent = " ✨ Heilende Melodie beendet! Wähle eine Frequenz für weitere Behandlung! ✨";
+ }
+ }, 1200);
+ }
+ 
+Funktion stopAllSounds() {
+ activeOszillatoren.forEach(osc => {
+ try {
+ osc.stop();
+ } fangen (e) {}
+ });
+ aktivOszillatoren = [];
+ 
+if (melodyInterval) {
+ clearInterval(melodyIntervall);
+ melodyInterval = null;
+ }
+ }
+ 
+Funktion toggleMusicMode() {
+ musicMode = !musicMode;
+ const musicControls = document.getElementById('musicControls');
+ const button = event.target;
+ 
+if (musicMode) {
+ musicControls.style.display = 'Block';
+ button.textContent = ' 🧽 Schwamm-Modus';
+ message.textContent = " 🎵 Musik-Modus aktiv! Wähle einen Ton und klicke auf die Zellen! 🎵";
+ } else {
+ musicControls.style.display = 'keine';
+ button.textContent = ' 🎵 Musik-Therapie';
+ message.textContent = "Bewege den Schwamm über die roten Zellen, um sie zu reinigen! 🧽✨";
+ stopAllSounds();
+ }
+ }
+ 
+function treatCellWithMusic(Zelle, Index) {
+ if (Zellen[Index].Zustand !== 'schmutzig') zurückgeben;
+ 
+cells[index].state = 'musikalisch';
+ cell.className = 'Zelle musikalisch';
+ 
+// Spezielle Farbe für Heilfrequenzen
+ if (currentTone & healingFrequencies[currentTone]) {
+ const healingData = healingFrequencies[currentTone];
+ cell.style.background = 'radialer-gradient(Kreis, ${healingData.color}, ${healingData.color}dd)';
+ }
+ 
+Musik-Wellen-Effekt
+ createMusicWaves(Zelle);
+ 
+setTimeout(() => {
+ Zellen[Index].Zustand = 'sauber';
+ cell.className = 'Zelle reinigen';
+ Zelle.Stil.Hintergrund = ''; Hintergrund zurücksetzen
+ cleanedCells++;
+ updateStats();
+ 
+if (cleanedCells < totalCells) {
+ lass musicMessages;
+ if (currentTone & healingFrequencies[currentTone]) {
+ const healingData = healingFrequencies[currentTone];
+ musicMessages = [
+ ' ✨ ${healingData.freq} Hz wirkt! ${healingData.name} aktiviert! ✨`,
+ ' 🌟 Heilfrequenz ${healingData.freq} Hz heilt deine Zellen! 🌟`,
+ ' 💫 ${healingData.name} durch ${healingData.freq} Hz! 💫 ',
+ ' 🎵 Spezielle Frequenz ${healingData.freq} Hz macht gesund! 🎵`
+ ];
+ } else {
+ musicMessages = [
+ " 🎵 Wunderschön! Die Musik heilt deine Zellen! 🎵",
+ " 🎶 Fantastisch! Heilende Klänge wirken! 🎶",
+ " 🎼 Maut! Die Zellen tanzen zur Gesundheit! 🎼",
+ " 🎵 Magisch! Musik macht gesund! 🎵"
+ ];
+ }
+ const randomMessage = musicMessages[Math.floor(Math.random() * musicMessages.length)];
+ message.textContent = zufällige Nachricht;
+ message.className = 'ermutigende Nachricht';
+ } else {
+ showCelebrationMessage();
+ }
+ }, 800);
+ }
+ 
+Funktion createMusicWaves(Zelle) {
+ const rect = cell.getBoundingClientRect();
+ const containerRect = particles.getBoundingClientRect();
+ 
+for (let i = 0; i < 3; i++) {
+ const wave = document.createElement('div');
+ wave.className = 'Musik-Welle';
+ wave.style.left = (rect.left - containerRect.left + rect.width/2 - 50) + 'px';
+ wave.style.top = (rect.top - containerRect.top + rect.height/2 - 50) + 'px';
+ wave.style.animationDelay = (i * 0,2) + 's';
+ 
+particles.appendKind(Welle);
+ 
+setTimeout(() => {
+ if (wave.parentNode) {
+ wave.parentNode.removeChild(welle);
+ }
+ }, 1000 + (i * 200));
+ }
+ }
+ 
+Funktion createCells(Anzahl = 20) {
+ cellContainer.innerHTML = '';
+ Zellen = [];
+ cleanedCells = 0;
+ totalCells = Anzahl;
+ 
+for (let i = 0; i < count; i++) {
+ const Zelle = document.createElement('div');
+ cell.className = 'Zelle schmutzig';
+ Zelle.Datensatz.Index = Ich;
+ cellContainer.appendChild(Zelle);
+ Zellen.push({
+ Element: Zelle,
+ Zustand: 'schmutzig'
+ });
+ }
+ 
+updateStats();
+ }
+ 
+Funktion updateStats() {
+ document.getElementById('cleanedCount').textContent = cleanedCells;
+ document.getElementById('dirtyCount').textContent = totalCells - cleanedCells;
+ const healthPercent = Math.round((cleanedCells / totalCells) * 100);
+ document.getElementById('healthPercent').textContent = healthPercent + '%';
+ progressFill.style.width = healthPercent + '%';
+ }
+ 
+function cleanCell(Zelle, Index) {
+ if (Zellen[Index].Zustand !== 'schmutzig') zurückgeben;
+ 
+Zellen[Index].Zustand = 'Reinigung';
+ cell.className = 'Zellenreinigung';
+ 
+Partikel-Effekt
+ createParticles(Zelle);
+ 
+setTimeout(() => {
+ Zellen[Index].Zustand = 'sauber';
+ cell.className = 'Zelle reinigen';
+ cleanedCells++;
+ updateStats();
+ 
+// Ermutigende Nachricht
+ if (cleanedCells < totalCells) {
+ showEncouragingMessage();
+ } else {
+ showCelebrationMessage();
+ }
+ }, 300);
+ }
+ 
+Funktion createParticles(Zelle) {
+ const rect = cell.getBoundingClientRect();
+ const containerRect = particles.getBoundingClientRect();
+ 
+for (let i = 0; i < 8; i++) {
+ const particle = document.createElement('div');
+ particle.className = 'Partikel';
+ particle.style.left = (rect.left - containerRect.left + rect.width/2) + 'px';
+ particle.style.top = (rect.top - containerRect.top + rect.height/2) + 'px';
+ particle.style.animationDelay = (i * 0,1) + 's';
+ 
+// Zufällige Richtung
+ const Winkel = (i / 8) * Math.PI * 2;
+ const Abstand = 30 + Math.random() * 20;
+ particle.style.setProperty('--dx', Math.cos(Winkel) * Abstand + 'px');
+ particle.style.setProperty('--dy', Math.sin(Winkel) * Abstand + 'px');
+ 
+particles.appendUntergeordnetes Element(Partikel);
+ 
+setTimeout(() => {
+ if (particle.parentNode) {
+ particle.parentNode.removeChild(Partikel);
+ }
+ }, 1000);
+ }
+ }
+ 
+Funktion showEncouragingMessage() {
+ const randomMessage = encouragingMessages[Math.floor(Math.random() * encouragingMessages.length)];
+ message.textContent = zufällige Nachricht;
+ message.className = 'ermutigende Nachricht';
+ }
+ 
+Funktion showCelebrationMessage() {
+ const randomMessage = celebrationMessages[Math.floor(Math.random() * celebrationMessages.length)];
+ message.textContent = zufällige Nachricht;
+ message.className = 'Feier der Nachricht';
+ }
+ 
+Funktion resetGame() {
+ createCells(20);
+ message.textContent = "Bewege den Schwamm über die roten Zellen, um sie zu reinigen! 🧽✨";
+ message.className = 'ermutigende Nachricht';
+ }
+ 
+Funktion addMoreCells() {
+ const currentCount = Zellen.Länge;
+ const newCount = aktuelleAnzahl + 10;
+ createCells(newCount);
+ }
+ 
+// Zellen-Klick für Musik-Modus
+ cellContainer.addEventListener('klick', (e) => {
+ if (musicMode && e.target.classList.contains('cell') && e.target.classList.contains('dirty')) {
+ const index = parseInt(e.target.dataset.index);
+ if (currentTone) {
+ if (healingFrequencies[currentTone]) {
+ Heilfrequenz
+ const healingData = healingFrequencies[currentTone];
+ createTone(healingData.freq, 1.2);
+ } else if (noteFrequencies[currentTone]) {
+ // Normale Note
+ const frequency = noteFrequencies[aktuellerTon];
+ createTone(Frequenz, 0,8);
+ }
+ }
+ treatCellWithMusic(e.target, Index);
+ }
+ });
+ 
+// Maus-Events für Schwamm
+ document.addEventListener('mousemove', (e) => {
+ if (!musicMode) {
+ sponge.style.left = (e.clientX - 30) + 'px';
+ sponge.style.top = (e.clientY - 20) + 'px';
+ sponge.style.opacity = '1';
+ 
+// Prüfe Kollision mit Zellen
+ if (isMouseDown) {
+ const elements = document.elementsFromPoint(e.clientX, e.clientY);
+ elements.forEach(Element => {
+ if (element.classList.contains('cell') && element.classList.contains('dirty')) {
+ const index = parseInt(element.dataset.index);
+ cleanCell(Element, Index);
+ }
+ });
+ }
+ }
+ });
+ 
+document.addEventListener('Maus nach unten', (e) => {
+ if (!musicMode) {
+ isMouseDown = wahr;
+ sponge.style.transform = 'scale(0.9)';
+ 
+// Prüfe sofortige Kollision
+ const elements = document.elementsFromPoint(e.clientX, e.clientY);
+ elements.forEach(Element => {
+ if (element.classList.contains('cell') && element.classList.contains('dirty')) {
+ const index = parseInt(element.dataset.index);
+ cleanCell(Element, Index);
+ }
+ });
+ }
+ });
+ 
+document.addEventListener('mouseup', () => {
+ if (!musicMode) {
+ isMouseDown = falsch;
+ sponge.style.transform = 'scale(1)';
+ }
+ });
+ 
+document.addEventListener('mouseleave', () => {
+ if (!musicMode) {
+ sponge.style.opacity = '0';
+ }
+ });
+ 
+// Touch-Events für mobile Geräte
+ document.addEventListener('touchmove', (e) => {
+ if (!musicMode) {
+ e.preventDefault();
+ const touch = e.touches[0];
+ sponge.style.left = (touch.clientX - 30) + 'px';
+ sponge.style.top = (touch.clientY - 20) + 'px';
+ sponge.style.opacity = '1';
+ 
+const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+ elements.forEach(Element => {
+ if (element.classList.contains('cell') && element.classList.contains('dirty')) {
+ const index = parseInt(element.dataset.index);
+ cleanCell(Element, Index);
+ }
+ });
+ }
+ });
+ 
+document.addEventListener('touchstart', (e) => {
+ if (!musicMode) {
+ const touch = e.touches[0];
+ sponge.style.transform = 'scale(0.9)';
+ 
+const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+ elements.forEach(Element => {
+ if (element.classList.contains('cell') && element.classList.contains('dirty')) {
+ const index = parseInt(element.dataset.index);
+ cleanCell(Element, Index);
+ }
+ });
+ }
+ });
+ 
+document.addEventListener('touchend', () => {
+ if (!musicMode) {
+ sponge.style.transform = 'scale(1)';
+ sponge.style.opacity = '0';
+ }
+ });
+ 
+Spiel-Funktionen
+ function toggleGameMode() {
+ gameMode = !gameMode;
+ const gameArena = document.getElementById('gameArena');
+ const gameArea = document.querySelector('.game-area');
+ const musicControls = document.getElementById('musicControls');
+ const button = event.target;
+ 
+if (gameMode) {
+ gameArena.style.display = 'Block';
+ gameArea.style.display = 'keine';
+ musicControls.style.display = 'keine';
+ musicMode = falsch;
+ button.textContent = ' 🧽 Zurück zum Zellen-Reiniger';
+ initSpiel();
+ } else {
+ gameArena.style.display = 'keine';
+ gameArea.style.display = 'Block';
+ button.textContent = ' 🎮 Krankheitserreger-Jäger';
+ stopGame();
+ }
+ }
+ 
+Funktion initGame() {
+ canvas = document.getElementById('gameCanvas');
+ ctx = canvas.getKontext('2d');
+ 
+Spieler initialisieren
+ Spieler = {
+ x: Leinwand.Breite / 2,
+ y: canvas.height / 2,
+ Größe: 15,
+ Geschwindigkeit: 3,
+ Farbe: '#48dbfb',
+ Richtung: 0
+ };
+ 
+Viren initialisieren
+ Viren = [];
+ powerUps = [];
+ createViruses();
+ createPowerUps();
+ 
+// Event Listener für Tastatur
+ document.addEventListener('keydown', handleKeyPress);
+ document.addEventListener('keyup', handleKeyRelease);
+ }
+ 
+Funktion createViruses() {
+ const virusCount = 5 + gameLevel * 2;
+ Viren = [];
+ 
+for (let i = 0; i < virusCount; i++) {
+ viren.push({
+ x: Math.random() * (Leinwand.Breite - 40) + 20,
+ y: Math.random() * (canvas.height - 40) + 20,
+ Größe: 12 + Math.random() * 8,
+ Geschwindigkeit: 0,5 + Math.random() * 1,5,
+ Farbe: ['#ff6b6b', '#ee5a52', '#ff4757', '#ff3838'][Math.floor(Math.random() * 4)],
+ dx: (Math.random() - 0.5) * 2,
+ dy: (Math.random() - 0.5) * 2,
+ type: Math.random() > 0.8 ? 'fast' : 'normal'
+ });
+ }
+ }
+ 
+Funktion createPowerUps() {
+ powerUps = [];
+ const powerUpCount = 3 + Math.floor(gameLevel / 2);
+ 
+for (let i = 0; i < powerUpCount; i++) {
+ powerUps.push({
+ x: Math.random() * (Leinwand.Breite - 30) + 15,
+ y: Math.random() * (canvas.height - 30) + 15,
+ Größe: 10,
+ Farbe: '#feca57',
+ type: ['Gesundheit', 'Geschwindigkeit', 'Punktzahl'][Math.floor(Math.random() * 3)],
+ gesammelt: falsch
+ });
+ }
+ }
+ 
+let keys = {};
+ 
+Funktion handleKeyPress(e) {
+ Schlüssel[e.key.toLowerCase()] = wahr;
+ e.preventDefault();
+ }
+ 
+Funktion handleKeyRelease(e) {
+ Schlüssel[e.key.toLowerCase()] = falsch;
+ }
+ 
+Funktion updatePlayer() {
+ Bewegung
+ if (keys['arrowup'] || keys['w']) player.y -= player.speed;
+ if (keys['arrowdown'] || keys['s']) Spieler.y += Spieler.Geschwindigkeit;
+ if (keys['arrowleft'] || keys['a']) Spieler.x -= Spieler.Geschwindigkeit;
+ if (keys['arrowright'] || keys['d']) player.x += player.speed;
+ 
+Grenzen
+ player.x = Math.max(player.size, Math.min(canvas.width - player.size, player.x));
+ player.y = Math.max(player.size, Math.min(canvas.height - player.size, player.y));
+ }
+ 
+Funktion updateViruses() {
+ viruses.forEach(Virus => {
+ virus.x += virus.dx * virus.geschwindigkeit;
+ virus.y += virus.dy * virus.geschwindigkeit;
+ 
+Wände abprallen
+ if (virus.x <= virus.size || virus.x >= canvas.width - virus.size) {
+ virus.dx *= -1;
+ }
+ if (virus.y <= virus.size || virus.y >= canvas.height - virus.size) {
+ virus.dy *= -1;
+ }
+ 
+// Kollision mit Spieler
+ const dist = Math.sqrt((spieler.x - virus.x) ** 2 + (spieler.y - virus.y) ** 2);
+ if (dist < player.size + virus.size) {
+ Virus "gefressen"
+ const index = viruses.indexOf(Virus);
+ viruses.splice(Index, 1);
+ gameScore += virus.type === 'schnell' ? 20 : 10;
+ updateGameStats();
+ 
+Sound-Effekt
+ try {
+ createTone(440 + Math.random() * 200, 0.1);
+ } fangen (e) {}
+ }
+ });
+ }
+ 
+Funktion updatePowerUps() {
+ powerUps.forEach(powerUp => {
+ if (!powerUp.collected) {
+ const dist = Math.sqrt((spieler.x - powerUp.x) ** 2 + (spieler.y - powerUp.y) ** 2);
+ if (dist < player.size + powerUp.size) {
+ powerUp.collected = wahr;
+ 
+// Power-Up Effekt
+ Schalter (powerUp.type) {
+ Fall "Gesundheit":
+ gameLives = Math.min(5, gameLives + 1);
+ brechen;
+ Fall 'Geschwindigkeit':
+ player.speed = Mathematik.min(5, Spieler.Geschwindigkeit + 0,5);
+ brechen;
+ Fall 'Punktzahl':
+ gameScore += 50;
+ brechen;
+ }
+ 
+updateGameStats();
+ 
+Sound-Effekt
+ try {
+ createTone(660, 0.2);
+ } fangen (e) {}
+ }
+ }
+ });
+ }
+ 
+Funktion drawPlayer() {
+ ctx.fillStyle = Spieler.Farbe;
+ ctx.beginPfad();
+ ctx.arc(spieler.x, spieler.y, spieler.size, 0, Math.PI * 2);
+ ctx.fill();
+ 
+Augen
+ ctx.fillStyle = 'weiß';
+ ctx.beginPfad();
+ ctx.arc(Spieler.x - 5, Spieler.y - 5, 3, 0, Math.PI * 2);
+ ctx.arc(Spieler.x + 5, Spieler.y - 5, 3, 0, Math.PI * 2);
+ ctx.fill();
+ 
+ctx.fillStyle = 'schwarz';
+ ctx.beginPfad();
+ ctx.arc(Spieler.x - 5, Spieler.y - 5, 1, 0, Math.PI * 2);
+ ctx.arc(Spieler.x + 5, Spieler.y - 5, 1, 0, Math.PI * 2);
+ ctx.fill();
+ }
+ 
+Funktion drawViruses() {
+ viruses.forEach(Virus => {
+ ctx.fillStyle = Virus.Farbe;
+ ctx.beginPfad();
+ ctx.arc(virus.x, virus.y, virus.size, 0, Math.PI * 2);
+ ctx.fill();
+ 
+// Stacheln für Viren
+ ctx.strokeStyle = Virus.Farbe;
+ ctx.lineWidth = 2;
+ for (let i = 0; i < 8; i++) {
+ const Winkel = (i / 8) * Math.PI * 2;
+ const x1 = virus.x + Math.cos(winkel) * virus.size;
+ const y1 = virus.y + Math.sin(Winkel) * virus.size;
+ const x2 = virus.x + Math.cos(winkel) * (virus.size + 5);
+ const y2 = virus.y + Math.sin(Winkel) * (virus.size + 5);
+ 
+ctx.beginPfad();
+ ctx.moveTo(x1, y1);
+ ctx.lineTo(x2, y2);
+ ctx.stroke();
+ }
+ });
+ }
+ 
+Funktion drawPowerUps() {
+ powerUps.forEach(powerUp => {
+ if (!powerUp.collected) {
+ ctx.fillStyle = powerUp.color;
+ ctx.beginPfad();
+ ctx.arc(powerUp.x, powerUp.y, powerUp.size, 0, Math.PI * 2);
+ ctx.fill();
+ 
+// Symbol je nach Typ
+ ctx.fillStyle = 'weiß';
+ ctx.font = '12px Arial';
+ ctx.textAlign = 'Mitte';
+ const symbol = powerUp.type === 'Gesundheit' ? '❤️' : 
+ powerUp.type === 'Geschwindigkeit' ? '⚡' : '⭐';
+ ctx.fillText(Symbol, powerUp.x, powerUp.y + 4);
+ }
+ });
+ }
+ 
+Funktion gameLoop() {
+ if (!gameRunning || gamePaused) Rückgabe;
+ 
+Canvas leeren
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ 
+Spiellogik
+ updatePlayer();
+ updateViruses();
+ updatePowerUps();
+ 
+Zeichnen
+ drawPlayer();
+ drawViruses();
+ drawPowerUps();
+ 
+Level abgeschlossen?
+ if (viruses.length === 0) {
+ gameLevel++;
+ createViruses();
+ createPowerUps();
+ player.speed = Math.min(5, player.speed + 0,2);
+ updateGameStats();
+ }
+ 
+gameAnimationId = requestAnimationFrame(SpielSchleife);
+ }
+ 
+Funktion updateGameStats() {
+ document.getElementById('gameScore').textContent = gameScore;
+ document.getElementById('gameLives').textContent = gameLives;
+ document.getElementById('gameLevel').textContent = gameLevel;
+ }
+ 
+Funktion startGame() {
+ if (!gameRunning) {
+ gameRunning = wahr;
+ gamePaused = falsch;
+ gameLoop();
+ } else if (SpielPausiert) {
+ gamePaused = falsch;
+ gameLoop();
+ }
+ }
+ 
+Funktion pauseGame() {
+ gamePaused = !gamePausiert;
+ if (!gamePaused && gameRunning) {
+ gameLoop();
+ }
+ }
+ 
+Funktion resetGameMode() {
+ stopGame();
+ gameScore = 0;
+ gameLives = 3;
+ gameLevel = 1;
+ updateGameStats();
+ initSpiel();
+ }
+ 
+Funktion stopGame() {
+ gameRunning = falsch;
+ gamePaused = falsch;
+ if (gameAnimationId) {
+ cancelAnimationFrame(gameAnimationId);
+ }
+ }
+
+Spiel initialisieren
+ createCells(20);
+ </Drehbuch>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.Dokument; if(b){var d=b.createElement('Skript'); d.innerHTML="window.__CF$cv$params={r:'96e3fb9f403b5b9b',t:'MTc1NTA0Mzc1OC4wMDAwMDA='}; var a=document.createElement('Skript'); a.nonce=''; a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js'; document.getElementsByTagName('head')[0].appendChild(a);"; b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe'); a.Höhe=1; a.breite=1; a.style.position='absolut'; a.style.top=0; a.style.left=0; a.style.border='keine'; a.style.visibility='versteckt'; document.body.appendKind(a); if('loading'!==document.readyState)c(); else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c); else{var e=document.onreadystatechange||Funktion(){}; document.onreadystatechange=function(b){e(b);' loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})(); </Drehbuch></Text>
+</html> 
